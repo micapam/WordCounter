@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="350" height="138"
+		styleName="dialogue">
+	<mx:Script>
+		<![CDATA[
+			
+			
+			
+		]]>
+	</mx:Script>
+	<mx:TextInput x="112" width="220" bottom="49" id="titleInput"/>
+	<mx:Label x="10" text="Manuscript title:" bottom="49"/>
+	<mx:Button x="194" label="Cancel" bottom="10" width="65"
+		click="close()" />
+	<mx:Button x="267" label="OK" bottom="10" width="65"
+		click="saveManuscript()" />
+	<mx:Label width="232" top="10" horizontalCenter="0"
+		text="Edit a word count" styleName="heading" id="dialogueTitle" />
+</mx:Canvas>

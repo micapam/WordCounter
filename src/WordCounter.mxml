@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml"
+		applicationComplete="init()" layout="absolute"
+		backgroundGradientAlphas="[1.0, 1.0]"
+		backgroundGradientColors="[#FDFDFB, #F8F8F8]">
+	<mx:Script>
+		<![CDATA[
+			import com.almirun.apps.wordcounter.events.ManuscriptEvent;
+			import com.almirun.apps.wordcounter.data.Binder;
+			import nz.co.codec.flexorm.EntityManager;
+			import mx.managers.SystemManager;
+			import mx.managers.PopUpManagerChildList;
+			import com.almirun.apps.wordcounter.controller.FrontController;
+			import com.almirun.apps.wordcounter.view.ManuscriptEditor;
+			import mx.managers.PopUpManager;
+			import com.almirun.apps.wordcounter.model.Manuscript;
+			import mx.collections.ArrayCollection;
+			
+			private static const DB_FILE:File
+				= File.applicationStorageDirectory.resolvePath("contacts.db");
+			
+			private var binder:Binder;
+			private var controller:FrontController;
+			private var manuscript:Manuscript;
+			private var em:EntityManager;
+			
+			private function init():void
+			{
+				var conn:SQLConnection = new SQLConnection();
+				conn.open(DB_FILE);
+				em = EntityManager.instance;
+				em.sqlConnection = conn; 
+				binder = new Binder();
+				binder.entityManager = em;
+				binder.reload();
+				
+				controller = new FrontController(SystemManager.getSWFRoot(this),
+					em, binder);
+				
+				manuscriptPicker.dataProvider = binder.manuscripts;
+				callLater(selectManuscriptIfAvailable);
+			}
+			
+			private function selectManuscriptIfAvailable():void
+			{
+				if (binder.manuscripts.length == 0)
+				{
+					createNewManuscript();
+				}
+				else
+				{
+					selectManuscript();
+				}
+			}
+			
+			private function createNewManuscript():void
+			{
+				showManuscriptEditor();
+			}
+			
+			private function showManuscriptEditor(
+					manuscript:Manuscript = null):void
+			{
+				var editor:ManuscriptEditor = new ManuscriptEditor();
+				PopUpManager.addPopUp(editor, this, true);
+				PopUpManager.centerPopUp(editor);
+				
+				if (null == manuscript)
+				{
+					manuscript = new Manuscript();
+					manuscript.id = 0;
+				}
+				
+				editor.manuscript = manuscript;
+			}
+			
+			private function selectManuscript():void
+			{
+				manuscript = manuscriptPicker.selectedItem as Manuscript;
+				
+				if (null == manuscript)
+				{
+					return;
+				}
+				
+				progressDisplay.dataProvider = manuscript.goals;
+				goalSeries.dataProvider = manuscript.goals;
+				actualSeries.dataProvider = manuscript.tallies; 
+			}
+			
+			private function createGoal():void
+			{
+				
+			}
+			
+			private function destroyManuscript():void
+			{
+				dispatchEvent(new ManuscriptEvent(
+					ManuscriptEvent.MANUSCRIPT_DESTROY, manuscript));
+				callLater(selectManuscriptIfAvailable);
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:UIComponent id="popupSibling" />
+	<mx:LineChart id="progressDisplay" bottom="40" left="10" right="10" top="103">
+		<mx:series>
+			<mx:LineSeries id="goalSeries" displayName="Goal" yField="numWords"
+				xField="countDate" />
+			<mx:LineSeries id="actualSeries" displayName="Actual"
+				yField="numWords" xField="countDate" />
+		</mx:series>
+	</mx:LineChart>
+	<mx:Legend dataProvider="{progressDisplay}" x="10" y="42"/>
+	<mx:Button x="268" y="73" label="New" width="59"
+		click="createNewManuscript()"/>
+	<mx:Button label="Log progress" width="94" bottom="10" horizontalCenter="51"/>
+	<mx:Button label="Create goal" width="94" bottom="10" horizontalCenter="-51"
+		click="createGoal()" />
+	<mx:Button x="335" y="73" label="Delete" click="destroyManuscript()"/>
+	<mx:ComboBox x="402" y="73" id="manuscriptPicker" labelField="title"
+		change="selectManuscript()"></mx:ComboBox>
+	<mx:Style source="wcstyle.css"/>
+	<mx:Label y="20" text="Word count utility" textAlign="center"
+		styleName="heading" horizontalCenter="0"/>
+	
+</mx:WindowedApplication>

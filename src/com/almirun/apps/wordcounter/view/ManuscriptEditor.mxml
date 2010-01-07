@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="370" height="340"
+		styleName="dialogue" creationComplete="init()">
+	<mx:Script>
+		<![CDATA[
+			import nz.co.codec.flexorm.EntityManager;
+			import com.almirun.apps.wordcounter.events.ManuscriptEvent;
+			import mx.managers.PopUpManager;
+			import com.almirun.apps.wordcounter.model.Manuscript;
+			
+			public function get manuscript():Manuscript
+			{
+				return _manuscript;
+			}
+			public function set manuscript(value:Manuscript):void
+			{
+				_manuscript = value;
+				
+				if (0 == value.id)
+				{
+					editorHeading.text = "Create new manuscript";
+					return;
+				}
+				else
+				{
+					titleInput.text = manuscript.title;
+					startDateChooser.selectedDate = manuscript.startDate;
+				}
+			}
+			private var _manuscript:Manuscript;
+			
+			private function saveManuscript():void
+			{
+				manuscript.title = titleInput.text;
+				dispatchEvent(new ManuscriptEvent(
+					ManuscriptEvent.MANUSCRIPT_UPDATE, manuscript));
+				close();
+			}
+			
+			private function close():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function init():void
+			{
+				
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:TextInput x="121" width="220" id="titleInput" top="80" height="22"/>
+	<mx:Label x="19" text="Manuscript title:" top="82" height="20"/>
+	<mx:Label x="19" text="Start date:" top="112" height="24" />
+	<mx:Button x="203" label="Cancel" bottom="10" width="65"
+		click="close()" />
+	<mx:Button x="276" label="Save" bottom="10" width="65"
+		click="saveManuscript()" />
+	<mx:Label width="328" top="19" horizontalCenter="0"
+		text="Edit your manuscript" styleName="heading" id="editorHeading"/>
+	<mx:DateChooser x="122" y="110" width="219" id="startDateChooser" />
+</mx:Canvas>

@@ -1,0 +1,32 @@
+/* CSS file */
+
+.dialogue
+{
+	backgroundColor: #F7F7F7;
+	borderStyle: solid;
+	borderThickness: 2;
+	cornerRadius: 7;
+	borderColor: #8B7613;
+}
+
+Label.heading
+{
+	fontFamily: "Adobe Caslon Pro";
+	fontSize: 24;
+	fontWeight: bold;
+	textAlign: center;
+}
+
+Button
+{
+	fillAlphas: 1.0, 1.0;
+	fillColors: #FFFFFF, #F2F1F1;
+	fontFamily: "Droid Sans";
+}
+
+Label
+{
+	fontFamily: "Helvetica Neue";
+	fontSize: 12;
+	color: #5B4D0A;
+}
