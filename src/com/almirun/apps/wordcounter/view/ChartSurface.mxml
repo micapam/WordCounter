@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<degrafa:Surface xmlns:mx="http://www.adobe.com/2006/mxml"
+		xmlns:paint="com.degrafa.paint.*" xmlns:degrafa="com.degrafa.*"
+		xmlns:geometry="com.degrafa.geometry.*">
+	<mx:Script>
+		<![CDATA[
+
+			import com.almirun.apps.wordcounter.model.WordCount;
+			import com.almirun.apps.wordcounter.model.Manuscript;
+			
+			import mx.collections.IViewCursor;
+			
+			public function get manuscript():Manuscript { return _manuscript; }
+			public function set manuscript(value:Manuscript):void
+				{ _manuscript = value; }
+			private var _manuscript:Manuscript;
+			
+            private function get goalPoints():Array
+            {
+                var p:Array = [];
+                
+                if (null != manuscript)
+                {
+	                var cursor:IViewCursor = manuscript.goals.createCursor();
+	                
+	                do {
+	                	p.push(createPoint(cursor.current.countDate.time,
+	                		cursor.current.numWords));
+	                }
+	                while (cursor.moveNext());
+                }
+                
+                return p;
+            }
+            
+            private function createPoint(time:int, numWords:int):Point
+            {
+				var px:Number = width * (time / manuscript.lastDate.getTime());
+                var py:Number = height * (numWords / manuscript.highestCount);                
+                return new Point(px, py);
+            } 
+			
+		]]>
+	</mx:Script>
+	
+	<paint:SolidStroke id="aspirationStroke" color="#0000ff" weight="1" />
+	<paint:SolidStroke id="realityStroke" color="ff0000" weight="2" />
+	
+	<degrafa:GeometryGroup width="{width}" height="{height}">
+		<geometry:Polyline id="aspirationLine" points="{goalPoints}"
+			stroke="{aspirationStroke}" />
+	</degrafa:GeometryGroup>
+</degrafa:Surface>

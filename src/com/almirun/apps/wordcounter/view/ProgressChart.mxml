@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+		xmlns:paint="com.degrafa.paint.*" xmlns:degrafa="com.degrafa.*"
+		xmlns:geometry="com.degrafa.geometry.*" xmlns:view="com.almirun.apps.wordcounter.view.*" xmlns:model="com.almirun.apps.wordcounter.model.*">
+	<mx:Script>
+		<![CDATA[
+		
+			import com.almirun.apps.wordcounter.model.Manuscript;
+		
+			[Bindable]
+			public function get manuscript():Manuscript { return _manuscript; }
+			public function set manuscript(value:Manuscript):void
+			{
+				_manuscript = value;
+				callLater(update);
+			}
+			private var _manuscript:Manuscript;
+			
+			public function update():void
+			{
+				removeChild(chartSurface);
+				
+				if (null == manuscript)
+				{
+					return;
+				}
+				
+				chartSurface = new ChartSurface();
+				chartSurface.manuscript = manuscript;
+				addChild(chartSurface); 
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<view:ChartSurface id="chartSurface" />
+	
+</mx:Canvas>
